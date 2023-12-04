@@ -4,14 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hci.hcibackend.common.exception.ApiAsserts;
 import com.hci.hcibackend.mapper.UmsUserMapper;
+import com.hci.hcibackend.model.dto.LoginDTO;
 import com.hci.hcibackend.model.dto.RegisterDTO;
 import com.hci.hcibackend.model.entity.UmsUser;
 import com.hci.hcibackend.service.UmsUserService;
 import com.hci.hcibackend.utils.MD5Utils;
+import com.hci.hcibackend.utils.jwt.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+@Slf4j
 @Service
 public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
             implements UmsUserService {
@@ -40,5 +44,26 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
             baseMapper.insert(addUser);
         }
         return "OK";
+    }
+
+    @Override
+    public UmsUser getUserByUsername(String username) {
+        return baseMapper.selectOne(new LambdaQueryWrapper<UmsUser>().eq(UmsUser::getUsername, username));
+    }
+
+    @Override
+    public String login(LoginDTO dto) {
+        String token = null;
+        try {
+            UmsUser user = getUserByUsername(dto.getUsername());
+            String md5password = MD5Utils.getPwd(dto.getPassword());
+            if (!md5password.equals(user.getPassword())) {
+                throw new Exception("密码错误");
+            }
+            token = JwtUtil.generateToken(user.getUsername());
+        } catch (Exception e) {
+            log.warn("用户不存在or密码验证失败=======>{}", dto.getUsername());
+        }
+        return token;
     }
 }
