@@ -42,4 +42,9 @@ public class UserController extends BaseController {
         UmsUser user = umsUserService.getUserByUsername(userName);
         return ApiResult.success(user);
     }
+
+    @GetMapping(value = "/logout")
+    public ApiResult<Object> logOut() {
+        return ApiResult.success(null, "注销成功");
+    }
 }
