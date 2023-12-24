@@ -12,6 +12,7 @@ import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.List;
 
 import static com.hci.hcibackend.utils.jwt.JwtUtil.USER_NAME;
 
@@ -43,6 +44,13 @@ public class PostController extends BaseController {
     public ApiResult<Map<String, Object>> view(@RequestParam("id") String id) {
         Map<String, Object> map = bmsPostService.viewTopic(id);
         return ApiResult.success(map);
+    }
+
+
+    @GetMapping("/recommend")
+    public ApiResult<List<BmsPost>> getRecommend(@RequestParam("topicId") String id) {
+        List<BmsPost> topics = bmsPostService.getRecommend(id);
+        return ApiResult.success(topics);
     }
 
 }
