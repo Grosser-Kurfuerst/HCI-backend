@@ -8,9 +8,9 @@ import com.hci.hcibackend.common.ApiResult;
 import com.hci.hcibackend.model.entity.BmsPost;
 import com.hci.hcibackend.model.entity.BmsTag;
 import com.hci.hcibackend.service.BmsTagService;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 

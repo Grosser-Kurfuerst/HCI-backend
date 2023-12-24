@@ -7,9 +7,9 @@ import com.hci.hcibackend.model.dto.CommentDTO;
 import com.hci.hcibackend.model.vo.CommentVO;
 import com.hci.hcibackend.service.BmsCommentService;
 import com.hci.hcibackend.service.UmsUserService;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.List;
 import static com.hci.hcibackend.utils.jwt.JwtUtil.USER_NAME;
 
