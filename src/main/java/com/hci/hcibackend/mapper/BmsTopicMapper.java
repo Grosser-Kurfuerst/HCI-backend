@@ -33,4 +33,12 @@ public interface BmsTopicMapper extends BaseMapper<BmsPost> {
 
     @Select("select * from bms_post t where t.id != #{id} order by rand(), t.view limit 10")
     List<BmsPost> selectRecommend(@Param("id") String id);
+    /**
+     * 全文检索
+     *
+     * @param page
+     * @param keyword
+     * @return
+     */
+    Page<PostVO> searchByKey(@Param("page") Page<PostVO> page, @Param("keyword") String keyword);
 }
