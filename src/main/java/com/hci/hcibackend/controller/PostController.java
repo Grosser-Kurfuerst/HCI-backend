@@ -10,6 +10,9 @@ import com.hci.hcibackend.service.BmsPostService;
 import com.hci.hcibackend.service.UmsUserService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
 import static com.hci.hcibackend.utils.jwt.JwtUtil.USER_NAME;
 
 
@@ -36,6 +39,10 @@ public class PostController extends BaseController {
         BmsPost topic = bmsPostService.create(dto, user);
         return ApiResult.success(topic);
     }
-
+    @GetMapping()
+    public ApiResult<Map<String, Object>> view(@RequestParam("id") String id) {
+        Map<String, Object> map = bmsPostService.viewTopic(id);
+        return ApiResult.success(map);
+    }
 
 }

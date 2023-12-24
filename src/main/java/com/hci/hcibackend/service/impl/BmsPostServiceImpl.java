@@ -1,5 +1,8 @@
 package com.hci.hcibackend.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.hci.hcibackend.model.vo.ProfileVO;
+import com.hci.hcibackend.service.UmsUserService;
 import com.vdurmont.emoji.EmojiParser;
 import org.springframework.util.Assert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -38,6 +41,9 @@ public class BmsPostServiceImpl extends ServiceImpl<BmsTopicMapper, BmsPost>
     @Autowired
     @Lazy
     private com.hci.hcibackend.service.BmsTagService bmsTagService;
+
+    @Autowired
+    private UmsUserService iUmsUserService;
 
     @Autowired
     private BmsTopicTagService bmsTopicTagService;
@@ -86,5 +92,34 @@ public class BmsPostServiceImpl extends ServiceImpl<BmsTopicMapper, BmsPost>
         }
 
         return topic;
+    }
+
+    @Override
+    public Map<String, Object> viewTopic(String id) {
+        Map<String, Object> map = new HashMap<>(16);
+        BmsPost topic = this.baseMapper.selectById(id);
+        Assert.notNull(topic, "当前话题不存在,或已被作者删除");
+        // 查询话题详情
+        topic.setView(topic.getView() + 1);
+        this.baseMapper.updateById(topic);
+        // emoji转码
+        topic.setContent(EmojiParser.parseToUnicode(topic.getContent()));
+        map.put("topic", topic);
+        // 标签
+        QueryWrapper<BmsTopicTag> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(BmsTopicTag::getTopicId, topic.getId());
+        Set<String> set = new HashSet<>();
+        for (BmsTopicTag articleTag : bmsTopicTagService.list(wrapper)) {
+            set.add(articleTag.getTagId());
+        }
+        List<BmsTag> tags = bmsTagService.listByIds(set);
+        map.put("tags", tags);
+
+        // 作者
+
+        ProfileVO user = iUmsUserService.getUserProfile(topic.getUserId());
+        map.put("user", user);
+
+        return map;
     }
 }

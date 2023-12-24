@@ -3,14 +3,18 @@ package com.hci.hcibackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hci.hcibackend.common.exception.ApiAsserts;
+import com.hci.hcibackend.mapper.BmsTopicMapper;
 import com.hci.hcibackend.mapper.UmsUserMapper;
 import com.hci.hcibackend.model.dto.LoginDTO;
 import com.hci.hcibackend.model.dto.RegisterDTO;
 import com.hci.hcibackend.model.entity.UmsUser;
+import com.hci.hcibackend.model.vo.ProfileVO;
 import com.hci.hcibackend.service.UmsUserService;
 import com.hci.hcibackend.utils.MD5Utils;
 import com.hci.hcibackend.utils.jwt.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -19,6 +23,10 @@ import java.util.Date;
 @Service
 public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
             implements UmsUserService {
+
+    @Autowired
+    private BmsTopicMapper bmsTopicMapper;
+
     @Override
     public String register(RegisterDTO dto) {
         LambdaQueryWrapper<UmsUser> wrapper = new LambdaQueryWrapper<>();
@@ -65,5 +73,14 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
             log.warn("用户不存在or密码验证失败=======>{}", dto.getUsername());
         }
         return token;
+    }
+
+    @Override
+    public ProfileVO getUserProfile(String id) {
+        ProfileVO profile = new ProfileVO();
+        UmsUser user = baseMapper.selectById(id);
+        BeanUtils.copyProperties(user, profile);
+
+        return profile;
     }
 }

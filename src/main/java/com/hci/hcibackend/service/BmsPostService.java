@@ -7,6 +7,8 @@ import com.hci.hcibackend.model.entity.BmsPost;
 import com.hci.hcibackend.model.entity.UmsUser;
 import com.hci.hcibackend.model.vo.PostVO;
 
+import java.util.Map;
+
 public interface BmsPostService extends IService<BmsPost> {
 
     /**
@@ -19,4 +21,6 @@ public interface BmsPostService extends IService<BmsPost> {
     Page<PostVO> getList(Page<PostVO> page, String tab);
 
     BmsPost create(CreateTopicDTO dto, UmsUser principal);
+
+    Map<String, Object> viewTopic(String id);
 }
