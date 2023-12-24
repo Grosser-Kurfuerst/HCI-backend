@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -38,4 +39,8 @@ public class BmsTopicTagServiceImpl extends ServiceImpl<BmsTopicTagMapper, BmsTo
         });
     }
 
+    @Override
+    public Set<String> selectTopicIdsByTagId(String id) {
+        return this.baseMapper.getTopicIdsByTagId(id);
+    }
 }
