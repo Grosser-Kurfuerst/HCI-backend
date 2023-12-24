@@ -3,10 +3,13 @@ package com.hci.hcibackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hci.hcibackend.common.exception.ApiAsserts;
+import com.hci.hcibackend.mapper.BmsFollowMapper;
 import com.hci.hcibackend.mapper.BmsTopicMapper;
 import com.hci.hcibackend.mapper.UmsUserMapper;
 import com.hci.hcibackend.model.dto.LoginDTO;
 import com.hci.hcibackend.model.dto.RegisterDTO;
+import com.hci.hcibackend.model.entity.BmsFollow;
+import com.hci.hcibackend.model.entity.BmsPost;
 import com.hci.hcibackend.model.entity.UmsUser;
 import com.hci.hcibackend.model.vo.ProfileVO;
 import com.hci.hcibackend.service.UmsUserService;
@@ -26,6 +29,9 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
 
     @Autowired
     private BmsTopicMapper bmsTopicMapper;
+
+    @Autowired
+    private BmsFollowMapper bmsFollowMapper;
 
     @Override
     public String register(RegisterDTO dto) {
@@ -80,7 +86,13 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
         ProfileVO profile = new ProfileVO();
         UmsUser user = baseMapper.selectById(id);
         BeanUtils.copyProperties(user, profile);
+        // 用户文章数
+        int count = Math.toIntExact(bmsTopicMapper.selectCount(new LambdaQueryWrapper<BmsPost>().eq(BmsPost::getUserId, id)));
+        profile.setTopicCount(count);
 
+        // 粉丝数
+        int followers = Math.toIntExact(bmsFollowMapper.selectCount((new LambdaQueryWrapper<BmsFollow>().eq(BmsFollow::getParentId, id))));
+        profile.setFollowerCount(followers);
         return profile;
     }
 }
