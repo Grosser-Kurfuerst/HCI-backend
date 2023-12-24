@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.hci.hcibackend.model.dto.LoginDTO;
 import com.hci.hcibackend.model.dto.RegisterDTO;
 import com.hci.hcibackend.model.entity.UmsUser;
+import com.hci.hcibackend.model.vo.ProfileVO;
 
 
 public interface UmsUserService extends IService<UmsUser> {
@@ -24,4 +25,6 @@ public interface UmsUserService extends IService<UmsUser> {
     String login(LoginDTO dto);
 
     UmsUser getUserByUsername(String username);
+
+    ProfileVO getUserProfile(String id);
 }

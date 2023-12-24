@@ -1,6 +1,7 @@
 package com.hci.hcibackend.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hci.hcibackend.model.entity.BmsTag;
 import com.hci.hcibackend.model.entity.BmsTopicTag;
 
 import java.util.List;
@@ -14,5 +15,7 @@ public interface BmsTopicTagService extends IService<BmsTopicTag> {
      * @return
      */
     List<BmsTopicTag> selectByTopicId(String topicId);
+
+    void createTopicTag(String id, List<BmsTag> tags);
 
 }
