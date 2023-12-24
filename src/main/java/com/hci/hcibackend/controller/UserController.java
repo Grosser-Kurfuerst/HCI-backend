@@ -38,13 +38,15 @@ public class UserController extends BaseController {
         return ApiResult.success(result);
     }
 
-    @PostMapping("/login")
-    public ApiResult<String> login(@Valid @RequestBody LoginDTO dto) {
-        String result = umsUserService.login(dto);
-        if (ObjectUtils.isEmpty(result)) {
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public ApiResult<Map<String, String>> login(@Valid @RequestBody LoginDTO dto) {
+        String token = umsUserService.login(dto);
+        if (ObjectUtils.isEmpty(token)) {
             return ApiResult.failed("账号密码错误");
         }
-        return ApiResult.success(result);
+        Map<String, String> map = new HashMap<>(16);
+        map.put("token", token);
+        return ApiResult.success(map, "登录成功");
     }
 
     @GetMapping("/info")
