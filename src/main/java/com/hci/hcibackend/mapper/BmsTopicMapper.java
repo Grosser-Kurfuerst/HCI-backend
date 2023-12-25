@@ -41,7 +41,7 @@ public interface BmsTopicMapper extends BaseMapper<BmsPost> {
      * @param keyword
      * @return
      */
-    @Select("SELECT t.id, t.title, t.user_id, t.comments, t.view, t.collects, t.top, t.essence, t.create_time, t.modify_time, u.username, u.alias, u.avatar" +
+    @Select("SELECT t.id, t.title, t.user_id, t.comments, t.view, t.collects, t.top, t.essence, t.create_time, t.modify_time, u.username, u.alias, u.avatar " +
             "FROM bms_post t " +
             "LEFT JOIN ums_user u ON t.user_id = u.id " +
             "WHERE t.title LIKE CONCAT('%',${keyword},'%') " +
