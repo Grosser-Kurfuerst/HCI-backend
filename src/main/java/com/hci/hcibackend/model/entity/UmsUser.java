@@ -35,7 +35,7 @@ public class UmsUser implements Serializable {
 
     @Builder.Default
     @TableField("avatar")
-    private String avatar = "https://s3.ax1x.com/2020/12/01/DfHNo4.jpg";
+    private String avatar = "https://cdn.pixabay.com/photo/2021/11/12/03/04/woman-6787784_1280.png";
 
     @TableField("email")
     private String email;

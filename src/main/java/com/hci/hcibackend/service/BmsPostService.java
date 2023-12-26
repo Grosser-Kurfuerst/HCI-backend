@@ -25,6 +25,8 @@ public interface BmsPostService extends IService<BmsPost> {
 
     Map<String, Object> viewTopic(String id);
 
+    Map<String, Object> onlyViewTopic(String id);
+
     List<BmsPost> getRecommend(String id);
 
     /**
