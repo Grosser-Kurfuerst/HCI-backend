@@ -50,6 +50,11 @@ public class PostController extends BaseController {
         return ApiResult.success(map);
     }
 
+    @GetMapping("/only")
+    public ApiResult<Map<String, Object>> onlyView(@RequestParam("id") String id) {
+        Map<String, Object> map = bmsPostService.onlyViewTopic(id);
+        return ApiResult.success(map);
+    }
 
     @GetMapping("/recommend")
     public ApiResult<List<BmsPost>> getRecommend(@RequestParam("topicId") String id) {

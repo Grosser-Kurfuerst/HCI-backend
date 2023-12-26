@@ -60,7 +60,6 @@ public class BmsPostServiceImpl extends ServiceImpl<BmsTopicMapper, BmsPost>
     @Transactional(rollbackFor = Exception.class)
     public BmsPost create(CreateTopicDTO dto, UmsUser user) {
         BmsPost topic1 = this.baseMapper.selectOne(new LambdaQueryWrapper<BmsPost>().eq(BmsPost::getTitle, dto.getTitle()));
-        Assert.isNull(topic1, "话题已存在，请修改");
 
         // 封装
         BmsPost topic = BmsPost.builder()
@@ -93,6 +92,34 @@ public class BmsPostServiceImpl extends ServiceImpl<BmsTopicMapper, BmsPost>
         Assert.notNull(topic, "当前话题不存在,或已被作者删除");
         // 查询话题详情
         topic.setView(topic.getView() + 1);
+        this.baseMapper.updateById(topic);
+        // emoji转码
+        topic.setContent(EmojiParser.parseToUnicode(topic.getContent()));
+        map.put("topic", topic);
+        // 标签
+        QueryWrapper<BmsTopicTag> wrapper = new QueryWrapper<>();
+        wrapper.lambda().eq(BmsTopicTag::getTopicId, topic.getId());
+        Set<String> set = new HashSet<>();
+        for (BmsTopicTag articleTag : bmsTopicTagService.list(wrapper)) {
+            set.add(articleTag.getTagId());
+        }
+        List<BmsTag> tags = bmsTagService.listByIds(set);
+        map.put("tags", tags);
+
+        // 作者
+
+        ProfileVO user = iUmsUserService.getUserProfile(topic.getUserId());
+        map.put("user", user);
+
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> onlyViewTopic(String id) {
+        Map<String, Object> map = new HashMap<>(16);
+        BmsPost topic = this.baseMapper.selectById(id);
+        Assert.notNull(topic, "当前话题不存在,或已被作者删除");
+        // 查询话题详情
         this.baseMapper.updateById(topic);
         // emoji转码
         topic.setContent(EmojiParser.parseToUnicode(topic.getContent()));
