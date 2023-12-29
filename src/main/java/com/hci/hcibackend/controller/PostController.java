@@ -2,6 +2,7 @@ package com.hci.hcibackend.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hci.hcibackend.common.ApiResult;
+import com.hci.hcibackend.common.exception.ApiAsserts;
 import com.hci.hcibackend.model.dto.CreateTopicDTO;
 import com.hci.hcibackend.model.entity.BmsPost;
 import com.hci.hcibackend.model.entity.UmsUser;
@@ -41,8 +42,12 @@ public class PostController extends BaseController {
     public ApiResult<BmsPost> create(@RequestHeader(value = USER_NAME) String userName
             , @RequestBody CreateTopicDTO dto) {
         UmsUser user = umsUserService.getUserByUsername(userName);
-        BmsPost topic = bmsPostService.create(dto, user);
-        return ApiResult.success(topic);
+        try {
+            BmsPost topic = bmsPostService.create(dto, user);
+            return ApiResult.success(topic);
+        } catch (Exception e) {
+            return ApiResult.failed("当前文章主题已经有人写啦~");
+        }
     }
     @GetMapping()
     public ApiResult<Map<String, Object>> view(@RequestParam("id") String id) {
