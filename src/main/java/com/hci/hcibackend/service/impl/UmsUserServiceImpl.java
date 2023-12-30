@@ -89,10 +89,14 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
         // 用户文章数
         int count = Math.toIntExact(bmsTopicMapper.selectCount(new LambdaQueryWrapper<BmsPost>().eq(BmsPost::getUserId, id)));
         profile.setTopicCount(count);
-
+        // 关注数
+        int follows = Math.toIntExact(bmsFollowMapper.selectCount((new LambdaQueryWrapper<BmsFollow>().eq(BmsFollow::getFollowerId, id))));
+        profile.setFollowCount(follows);
         // 粉丝数
         int followers = Math.toIntExact(bmsFollowMapper.selectCount((new LambdaQueryWrapper<BmsFollow>().eq(BmsFollow::getParentId, id))));
         profile.setFollowerCount(followers);
         return profile;
+
+
     }
 }
