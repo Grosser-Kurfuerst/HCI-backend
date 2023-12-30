@@ -43,6 +43,7 @@ public class BmsPostServiceImpl extends ServiceImpl<BmsTopicMapper, BmsPost>
     private com.hci.hcibackend.service.BmsTagService bmsTagService;
 
     @Autowired
+    @Lazy
     private UmsUserService iUmsUserService;
 
     @Autowired
