@@ -41,7 +41,6 @@ public class BmsCommentController extends BaseController {
     public ApiResult<String> delete(@RequestHeader(value = USER_NAME) String userName, @PathVariable("id") String id) {
         UmsUser umsUser = umsUserService.getUserByUsername(userName);
         BmsComment byId = bmsCommentService.getById(id);
-        log.info("hhhhhhhhhhhhh失败");
         Assert.notNull(byId, "来晚一步，评论已不存在");
         Assert.isTrue(byId.getUserId().equals(umsUser.getId()), "你为什么可以删除别人的评论？？？");
         bmsCommentService.removeById(id);

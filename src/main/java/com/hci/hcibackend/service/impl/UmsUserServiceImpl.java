@@ -1,8 +1,10 @@
 package com.hci.hcibackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hci.hcibackend.common.exception.ApiAsserts;
+import com.hci.hcibackend.mapper.BmsCollectMapper;
 import com.hci.hcibackend.mapper.BmsFollowMapper;
 import com.hci.hcibackend.mapper.BmsTopicMapper;
 import com.hci.hcibackend.mapper.UmsUserMapper;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -32,6 +35,12 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
 
     @Autowired
     private BmsFollowMapper bmsFollowMapper;
+
+    @Autowired
+    private BmsCollectMapper bmsCollectMapper;
+
+    @Autowired
+    private com.hci.hcibackend.service.BmsPostService bmsPostService;
 
     @Override
     public String register(RegisterDTO dto) {
@@ -98,5 +107,16 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
         return profile;
 
 
+    }
+
+    @Override
+    public Page<BmsPost> selectTopicsByUserId(Page<BmsPost> topicPage, String id) {
+
+        // 获取关联的话题ID
+        Set<String> ids = bmsCollectMapper.getTopicIdsByUserId(id);
+        LambdaQueryWrapper<BmsPost> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(BmsPost::getId, ids);
+
+        return bmsPostService.page(topicPage, wrapper);
     }
 }

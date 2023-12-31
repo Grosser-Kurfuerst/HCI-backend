@@ -1,11 +1,15 @@
 package com.hci.hcibackend.service;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hci.hcibackend.model.dto.LoginDTO;
 import com.hci.hcibackend.model.dto.RegisterDTO;
+import com.hci.hcibackend.model.entity.BmsPost;
 import com.hci.hcibackend.model.entity.UmsUser;
 import com.hci.hcibackend.model.vo.ProfileVO;
+
+import java.util.Set;
 
 
 public interface UmsUserService extends IService<UmsUser> {
@@ -27,4 +31,6 @@ public interface UmsUserService extends IService<UmsUser> {
     UmsUser getUserByUsername(String username);
 
     ProfileVO getUserProfile(String id);
+
+    Page<BmsPost> selectTopicsByUserId(Page<BmsPost> topicPage, String id);
 }
