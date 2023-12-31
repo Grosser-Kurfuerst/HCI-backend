@@ -79,6 +79,9 @@ public class UserController extends BaseController {
                 new LambdaQueryWrapper<BmsPost>().eq(BmsPost::getUserId, user.getId()));
         map.put("user", user);
         map.put("topics", page);
+        //粉丝数与关注数
+        map.put("followCount", umsUserService.getUserProfile(user.getId()).getFollowCount());
+        map.put("followerCount", umsUserService.getUserProfile(user.getId()).getFollowerCount());
         return ApiResult.success(map);
     }
 
