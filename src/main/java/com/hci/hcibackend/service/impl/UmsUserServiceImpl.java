@@ -114,6 +114,9 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
 
         // 获取关联的话题ID
         Set<String> ids = bmsCollectMapper.getTopicIdsByUserId(id);
+        if (ids == null || ids.isEmpty()) {
+            return new Page<>();
+        }
         LambdaQueryWrapper<BmsPost> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(BmsPost::getId, ids);
 
