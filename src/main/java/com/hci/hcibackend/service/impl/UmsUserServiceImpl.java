@@ -1,24 +1,47 @@
 package com.hci.hcibackend.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hci.hcibackend.common.exception.ApiAsserts;
+import com.hci.hcibackend.mapper.BmsCollectMapper;
+import com.hci.hcibackend.mapper.BmsFollowMapper;
+import com.hci.hcibackend.mapper.BmsTopicMapper;
 import com.hci.hcibackend.mapper.UmsUserMapper;
 import com.hci.hcibackend.model.dto.LoginDTO;
 import com.hci.hcibackend.model.dto.RegisterDTO;
+import com.hci.hcibackend.model.entity.BmsFollow;
+import com.hci.hcibackend.model.entity.BmsPost;
 import com.hci.hcibackend.model.entity.UmsUser;
+import com.hci.hcibackend.model.vo.ProfileVO;
 import com.hci.hcibackend.service.UmsUserService;
 import com.hci.hcibackend.utils.MD5Utils;
 import com.hci.hcibackend.utils.jwt.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
             implements UmsUserService {
+
+    @Autowired
+    private BmsTopicMapper bmsTopicMapper;
+
+    @Autowired
+    private BmsFollowMapper bmsFollowMapper;
+
+    @Autowired
+    private BmsCollectMapper bmsCollectMapper;
+
+    @Autowired
+    private com.hci.hcibackend.service.BmsPostService bmsPostService;
+
     @Override
     public String register(RegisterDTO dto) {
         LambdaQueryWrapper<UmsUser> wrapper = new LambdaQueryWrapper<>();
@@ -65,5 +88,38 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser>
             log.warn("用户不存在or密码验证失败=======>{}", dto.getUsername());
         }
         return token;
+    }
+
+    @Override
+    public ProfileVO getUserProfile(String id) {
+        ProfileVO profile = new ProfileVO();
+        UmsUser user = baseMapper.selectById(id);
+        BeanUtils.copyProperties(user, profile);
+        // 用户文章数
+        int count = Math.toIntExact(bmsTopicMapper.selectCount(new LambdaQueryWrapper<BmsPost>().eq(BmsPost::getUserId, id)));
+        profile.setTopicCount(count);
+        // 关注数
+        int follows = Math.toIntExact(bmsFollowMapper.selectCount((new LambdaQueryWrapper<BmsFollow>().eq(BmsFollow::getFollowerId, id))));
+        profile.setFollowCount(follows);
+        // 粉丝数
+        int followers = Math.toIntExact(bmsFollowMapper.selectCount((new LambdaQueryWrapper<BmsFollow>().eq(BmsFollow::getParentId, id))));
+        profile.setFollowerCount(followers);
+        return profile;
+
+
+    }
+
+    @Override
+    public Page<BmsPost> selectTopicsByUserId(Page<BmsPost> topicPage, String id) {
+
+        // 获取关联的话题ID
+        Set<String> ids = bmsCollectMapper.getTopicIdsByUserId(id);
+        if (ids == null || ids.isEmpty()) {
+            return new Page<>();
+        }
+        LambdaQueryWrapper<BmsPost> wrapper = new LambdaQueryWrapper<>();
+        wrapper.in(BmsPost::getId, ids);
+
+        return bmsPostService.page(topicPage, wrapper);
     }
 }
